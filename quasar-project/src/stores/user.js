@@ -64,7 +64,7 @@ export const useUserStore = defineStore(
         $q.notify({
           color: 'red-4',
           textColor: 'white',
-          icon: 'cloud_done',
+          icon: 'cloud_off',
           message: error.message
         })
       }
@@ -76,6 +76,7 @@ export const useUserStore = defineStore(
       reserve.value = ''
     }
     return {
+      _id,
       tokens,
       account,
       name,
@@ -92,7 +93,7 @@ export const useUserStore = defineStore(
   {
     persist: {
       key: '20230201',
-      paths: ['tokens', 'account', 'phone', 'name']
+      paths: ['tokens', 'account', 'phone', 'name', '_id', 'role']
     }
   },
   {}

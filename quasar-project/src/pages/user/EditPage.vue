@@ -1,25 +1,25 @@
 <template>
   <div class="column justify-center items-center q-mt-md">
     <q-avatar size="200px" color="secondary" text-color="white" class="q-mb-xl"  >
-      <img src="https://source.boringavatars.com/beam/256/$%7Baccount.value%7D?colors=ffabab,ffdaab,ddffab,abe4ff,d9abff">
+      <!-- <img src="https://source.boringavatars.com/beam/256/$%7Baccount.value%7D?colors=ffabab,ffdaab,ddffab,abe4ff,d9abff"> -->
+      <img :src="`https://source.boringavatars.com/beam/${user.account}?colors=058789,503d2e,d54b1a,e3a72f,f0ecc9`">
     </q-avatar>
 
-    <q-form @submit="onSubmit"  class="q-gutter-md text-center">
         <q-input
           outlined
           type="text"
           v-model="form.name"
           label="姓名"
-          hint="請輸入姓名"
           lazy-rules
           :rules="[(val) => (val && val.length >= 2) || '請輸入全名']"
         />
+
         <q-input
           outlined
           type="text"
           v-model="form.account"
           label="帳號"
-          hint="請輸入帳號"
+
           lazy-rules
           :rules="[(val) => (val && val.length >= 4) || '最少4位數以上']"
         />
@@ -28,22 +28,21 @@
           type="password"
           v-model="form.password"
           label="密碼"
-          hint="請輸入密碼"
           lazy-rules
         />
         <q-input
           outlined
-          type="tel"
+          type="text"
           v-model="form.phone"
           label="手機"
-          hint="請輸入手機號碼"
           lazy-rules
           :rules="[(val) => (val && val.length >= 10) || '請輸入正確手機號碼']"
         />
+
         <div>
-          <q-btn label="儲存" type="submit" color="primary" />
+          <q-btn label="儲存" type="submit" color="primary" @click="onSubmit()" />
         </div>
-      </q-form>
+
   </div>
 </template>
 
@@ -58,7 +57,8 @@ const user = useUserStore()
 const form = reactive({
   name: user.name,
   account: user.account,
-  phone: user.phone
+  phone: user.phone,
+  password: ''
 })
 
 const getUser = async () => {
@@ -77,10 +77,10 @@ const getUser = async () => {
     console.log(error)
   }
 }
-const onSubmit = async (form) => {
+const onSubmit = async () => {
   try {
-    console.log(form.name)
-    await apiAuth.patch(`/users/${user.name}`, form)
+    console.log()
+    await apiAuth.patch(`/users/${user._id}`, form)
     await $q.notify({
       color: 'green-4',
       textColor: 'white',
@@ -103,5 +103,15 @@ getUser()
 .q-form{
 width: 75%;
 
+}
+.q-input{
+margin-top: 1%;
+}
+.column{
+  .q-input{
+padding:12px 0;
+margin:0
+
+  }
 }
 </style>

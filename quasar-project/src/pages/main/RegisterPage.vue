@@ -1,9 +1,9 @@
 <template>
-  <div id="sm" class="row gt-sm q-pa-md">
-    <q-card style="margin:auto" id="regis">
-    <div class="col text-center">
+  <div id="sm" class="row  q-pa-md">
+    <!-- <q-card style="margin:auto" id="regis"> -->
+    <div class="col-xs-12 col-md-6 text-center" id="regis">
       <h5>註冊</h5>
-      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" style="width:30vw;margin: auto;" >
+      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md"  >
         <q-input
           outlined
           type="text"
@@ -65,7 +65,7 @@
 
       <q-btn id="register1" label="已擁有帳號" type="button" color="primary" to="/login" outline />
     </div>
-  </q-card>
+  <!-- </q-card> -->
   </div>
 
 </template>
@@ -97,7 +97,7 @@ const onSubmit = async () => {
     await $q.notify({
       color: 'green-4',
       textColor: 'white',
-      icon: 'success',
+      icon: 'check_circle',
       message: '創建成功，請登入'
     })
     router.push('/login')
@@ -131,6 +131,10 @@ margin-left: 40px;
 #sm{
 width: 100vw;
 margin-top: 50px;
+.col-md-6{
+margin: auto;
+padding: 12px;
+}
 
 }
 #regis{
@@ -140,4 +144,14 @@ border: 5px solid #eeeeee;
 border-radius: 5%;
 
 }
+@media screen and (min-width: 768px) {
+  #regis{
+background: #eeeeee;
+padding: 20px;
+border: 5px solid #eeeeee;
+border-radius: 5%;
+width: 25%;
+}
+}
+
 </style>

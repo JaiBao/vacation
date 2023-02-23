@@ -1,19 +1,28 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header class="bg-black text-white">
+    <q-header class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="src/assets/休假2.png">
-          </q-avatar>
-          出勤系統
+          <q-btn flat  to="/" size="lg" style="font-size:20px"
+          class="gt-xs">出缺勤管理系統雲
+            <img src="src/assets/A(60).png" style="width:80px;height: 80px;" >
+            </q-btn>
+
+            <q-span class="gt-xs">
+              歡迎{{user.name}}
+            </q-span>
         </q-toolbar-title>
-        <q-span>
-          歡迎{{user.name}}1231312
-        </q-span>
+
+          <q-btn
+          color="red"
+          @click="logout"
+          label="登出"
+          icon="logout"
+          rounded
+        />
 
       </q-toolbar>
     </q-header>
@@ -26,7 +35,7 @@
         @mouseout="miniState = true"
         mini-to-overlay
         :width="200"
-        :breakpoint="400"
+        :breakpoint="600"
         bordered
         class="bg-grey-1"
       >
@@ -52,27 +61,13 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-footer bordered class="bg-black text-white">
-      <q-toolbar>
-        <q-toolbar-title>
+    <q-footer bordered class="bg-primary text-white lt-md">
 
-<div id="app" >
-  <div >當前時間：{{nowDay}}{{nowTime}}</div>
+      <q-toolbar class="justify-center">
+        <div id="days" class="lt-md">
+           {{date}}</div>
+        <div id="times" class="lt-md">現在時間: {{ time }}</div>
 
-</div>
-        </q-toolbar-title>
-        <q-btn
-          color="red"
-          @click="logout"
-          label="登出"
-          icon="logout"
-          rounded
-        />
-        <q-btn
-        label="首頁" type="button" color="primary"
-        icon="home"
-        to="/"
-        rounded/>
       </q-toolbar>
     </q-footer>
 
@@ -80,45 +75,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from 'src/stores/user'
 import { useRouter } from 'vue-router'
 
-// export default {
-//   data () {
-//     return {
-//       nowDay: '',
-//       nowTime: ''
-//     }
-//   }
+// ----------------------
 
-//    {
-//     timeFormate (timeStamp) {
-//       const newdate = new Date(timeStamp)
-//       const week = ['日', '一', '二', '三', '四', '五', '六']
+const date = ref('')
+const time = ref('')
 
-//       const year = newdate.getFullYear()
-//       const month = newdate.getMonth() + 1 < 10 ? '0' + (newdate.getMonth() + 1) : newdate.getMonth() + 1
-//       const date = newdate.getDate() < 10 ? '0' + newdate.getDate() : newdate.getDate()
-//       const hh = newdate.getHours() < 10 ? '0' + newdate.getHours() : newdate.getHours()
-//       const mm = newdate.getMinutes() < 10 ? '0' + newdate.getMinutes() : newdate.getMinutes()
-//       const ss = newdate.getSeconds() < 10 ? '0' + newdate.getSeconds() : newdate.getSeconds()
+function updateDateTime () {
+  date.value = new Date().toLocaleDateString()
+  time.value = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }).split(':')[0] + ':' + new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }).split(':')[1]
+  // console.log(time, date)
+}
 
-//       this.nowTime = hh + ':' + mm + ':' + ss
-//       this.nowDay = year + '年' + month + '月' + date + '日'
-//     },
-//     nowTimes () {
-//       const self = this
-//       self.timeFormate(new Date())
-//       setInterval(() => {
-//         self.timeFormate(new Date())
-//       }, 1000)
-//     }
-//   },
-//   created () {
-//     this.nowTimes()
-//   }
-// }
+let interval
+
+onMounted(() => {
+  updateDateTime()
+  interval = setInterval(() => {
+    updateDateTime()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(interval)
+  return {
+    date,
+    time
+  }
+})
+
+// -----------
 
 const user = useUserStore()
 
@@ -139,11 +128,6 @@ const menuList = [
     label: '行事曆',
     separator: false,
     a: '/admin'
-  }, {
-    icon: 'account_circle',
-    label: '使用者資料',
-    separator: false,
-    a: '/admin/edit'
   },
   {
     icon: 'manage_accounts',
@@ -152,22 +136,29 @@ const menuList = [
     a: '/admin/user'
   },
   {
-    icon: 'edit_document',
-    label: '休假申請',
+    icon: 'free_cancellation',
+    label: '休假審核',
     separator: false,
-    a: '/admin/reserve'
+    a: '/admin/review'
   },
   {
     icon: 'manage_history',
     label: '假單管理',
     separator: false,
-    a: '/admin/article'
+    a: '/admin/limit'
+  },
+
+  {
+    icon: 'format_list_bulleted_add',
+    label: '公告管理',
+    separator: false,
+    a: '/admin/Bulletin'
   },
   {
-    icon: 'free_cancellation',
-    label: '休假審核',
+    icon: 'home',
+    label: '首頁',
     separator: false,
-    a: '/admin/limit'
+    a: '/'
   }
 
 ]
@@ -175,16 +166,29 @@ const menuList = [
 </script>
 
 <style>
-#app{
+#times{
     font-family: 'Share Tech Mono', monospace;
     color: #ffffff;
     text-align: center;
     position: absolute;
-    left: 50%;
+    left: 70%;
     top: 50%;
     transform: translate(-50%, -50%);
     color: #daf6ff;
-    text-shadow: 0 0 20px rgba(#7BD08D, 1),
+    text-shadow: 0 0 20px rgba(#7bcdd0, 1),
+                 0 0 20px rgba(#7BD08D, 0);
+}
+#days{
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    text-align: center;
+    position: absolute;
+    left: 28%;
+    top: 50%;
+    font-size: 30px;
+    transform: translate(-50%, -50%);
+    color: #daf6ff;
+    text-shadow: 0 0 20px rgba(#7bcdd0, 1),
                  0 0 20px rgba(#7BD08D, 0);
 }
 </style>

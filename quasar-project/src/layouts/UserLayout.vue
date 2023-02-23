@@ -1,19 +1,25 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <q-header class="bg-black text-white">
+    <q-header class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="src/assets/休假2.png">
-          </q-avatar>
-          出勤系統
-        </q-toolbar-title>
+          <q-btn flat  to="/" size="lg" style="font-size:20px" class="gt-xs" >出缺勤管理系統雲
+            <img src="src/assets/A(60).png" style="width:80px;height: 80px;"> </q-btn>
+            <q-span>歡迎{{user.name}}的使用</q-span>
+          </q-toolbar-title>
         <q-spacer>
+          <q-btn
+          color="red"
+          @click="logout"
+          label="登出"
+          icon="logout"
+          rounded
+        />
+
         </q-spacer>
-        <q-span>歡迎{{user.name}}</q-span>
       </q-toolbar>
     </q-header>
 
@@ -51,24 +57,14 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-footer bordered class="bg-primary text-white">
+    <q-footer bordered class="bg-primary text-white lt-md">
       <q-toolbar>
         <q-toolbar-title>
 
-          <div>date</div>
+         <div id="days" class="lt-md"> {{date}}</div>
+        <div id="times" class="lt-md">現在時間: {{ time }}</div>
         </q-toolbar-title>
-        <q-btn
-          color="red"
-          @click="logout"
-          label="登出"
-          icon="logout"
-          rounded
-        />
-        <q-btn
-        label="首頁" type="button" color="primary"
-        icon="home"
-        to="/"
-        rounded/>
+
       </q-toolbar>
     </q-footer>
 
@@ -76,9 +72,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from 'src/stores/user'
 import { useRouter } from 'vue-router'
+
+// ----------------------
+
+const date = ref('')
+const time = ref('')
+
+function updateDateTime () {
+  date.value = new Date().toLocaleDateString()
+  time.value = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }).split(':')[0] + ':' + new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }).split(':')[1]
+  // console.log(time, date)
+}
+
+let interval
+
+onMounted(() => {
+  updateDateTime()
+  interval = setInterval(() => {
+    updateDateTime()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(interval)
+  return {
+    date,
+    time
+  }
+})
+
+// -----------
 
 const router = useRouter()
 const drawer = ref(false)
@@ -110,15 +136,42 @@ const menuList = [
     icon: 'edit_document',
     label: '休假申請',
     separator: false,
-    a: '/user/reserve'
+    a: '/user/vacation'
   },
   {
-    icon: 'manage_search',
-    label: '申請查詢',
+    icon: 'home',
+    label: '首頁',
     separator: false,
-    a: '/user/see'
+    a: '/'
   }
 
 ]
 
 </script>
+<style>
+#times{
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    text-align: center;
+    position: absolute;
+    left: 70%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #daf6ff;
+    text-shadow: 0 0 20px rgba(#7bcdd0, 1),
+                 0 0 20px rgba(#7BD08D, 0);
+}
+#days{
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    text-align: center;
+    position: absolute;
+    left: 28%;
+    top: 50%;
+    font-size: 30px;
+    transform: translate(-50%, -50%);
+    color: #daf6ff;
+    text-shadow: 0 0 20px rgba(#7bcdd0, 1),
+                 0 0 20px rgba(#7BD08D, 0);
+}
+</style>

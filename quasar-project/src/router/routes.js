@@ -44,19 +44,6 @@ const routes = [
           login: false,
           admin: false
         }
-      },
-      {
-        path: '/404',
-        name: '404',
-        component: () => import('src/pages/ErrorNotFound.vue'),
-        meta: {
-          title: '出勤系統|404'
-        }
-      },
-      {
-        path: '/:pathMatch(.*)*',
-        name: 'all',
-        redirect: '/404'
       }
     ]
   },
@@ -82,6 +69,33 @@ const routes = [
           login: true,
           admin: true
         }
+      },
+      {
+        path: '/admin//limit',
+        component: () => import('pages/admin/LimitAdmin.vue'),
+        meta: {
+          title: '假單管理',
+          login: true,
+          admin: true
+        }
+      },
+      {
+        path: '/admin//Bulletin',
+        component: () => import('src/pages/admin/BulletinAdmin.vue'),
+        meta: {
+          title: '公告管理',
+          login: true,
+          admin: true
+        }
+      },
+      {
+        path: '/admin//review',
+        component: () => import('pages/admin/ReviewAdmin.vue'),
+        meta: {
+          title: '假單審核',
+          login: true,
+          admin: true
+        }
       }
     ]
   },
@@ -103,6 +117,15 @@ const routes = [
         component: () => import('pages/user/EditPage.vue'),
         meta: {
           title: '編輯會員',
+          login: true,
+          admin: false
+        }
+      },
+      {
+        path: '/user/vacation',
+        component: () => import('src/pages/user/UserVacation.vue'),
+        meta: {
+          title: '休假申請',
           login: true,
           admin: false
         }

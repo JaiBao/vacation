@@ -1,12 +1,11 @@
 <template>
 
-  <div id="sm" class="row gt-sm q-pa-md">
-    <q-card style="margin:auto;margin-top: 100px;" id="login">
+  <div id="sm" class="row">
 
-      <div  class="col text-center ">
+      <div  class="col-xs-12 col-md-6 text-center" id="login">
         <h5>登入</h5>
-        <img src="src/assets/休假2.png" style="width:300px;">
-      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" style="width:25vw;margin: auto;">
+        <!-- <img src="src/assets/休假2.png" style="width:300px;"> -->
+      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" >
         <q-input
           outlined
           type="text"
@@ -46,7 +45,7 @@
         to="/register"
       />
     </div>
-  </q-card>
+
   </div>
 </template>
 
@@ -114,8 +113,13 @@ margin-top: 20px;
 margin-left: 30px;
 }
 #sm {
-  width: 100vw;
+  width: 100%;
   margin-top: 50px;
+.col-md-6{
+margin: auto;
+padding: 12px;
+margin-top: 5%;
+}
 }
 #login{
 background: #eeeeee;
@@ -123,4 +127,15 @@ padding: 20px;
 border: 5px solid #eeeeee;
 border-radius: 5%;
 }
+@media screen and (min-width: 768px) {
+  #login{
+background: #eeeeee;
+padding: 20px;
+border: 5px solid #eeeeee;
+border-radius: 5%;
+width: 20%;
+
+}
+}
+
 </style>

@@ -1,7 +1,12 @@
-import { Schema, model, ObjectId, Error } from 'mongoose'
+import { Schema, model, Error } from 'mongoose'
 import bcrypt from 'bcrypt'
+// import vacations from './vacations.js'
 
 const schema = new Schema({
+  name: {
+    type: String
+
+  },
   account: {
     type: String,
     reqired: [true, '缺少帳號'],
@@ -23,16 +28,38 @@ const schema = new Schema({
     reqired: [true, '請輸入電話'],
     default: ''
   },
-  dateTime: {
+  vacation: {
     type: [{
-      day: {
-        type: ObjectId,
-        ref: 'dateTimes',
-        required: [true, '請選擇假期']
+      name: {
+        type: String,
+        required: [true, '請輸入姓名']
       },
-      quantity: {
-        type: Number,
-        required: [true, '請選擇時數']
+
+      leaveType: {
+        type: String,
+        required: [true, '請選擇假別'],
+        enum: {
+          values: ['例假', '事假', '病假', '公假', '喪假', '育嬰假', '特休', '婚假', '生理假', '產假', '陪產檢及陪產假', '安胎假', '育嬰留職停薪假', '家庭照顧假'],
+          message: '假別錯誤'
+        },
+
+        default: ''
+
+      },
+      startDate: {
+        type: String,
+        default: ''
+      },
+      endDate: {
+        type: String,
+        default: ''
+      },
+      success: {
+        type: String,
+        default: '未審核',
+        enum: {
+          values: ['未審核', '已核准', '不核准']
+        }
       }
     }],
     default: []
@@ -60,8 +87,8 @@ schema.pre('save', function (next) {
 })
 
 schema.pre('findOneAndUpdate', function (next) {
-  const user = this
-  if (user.isModified('password')) {
+  const user = this._update
+  if (user.password) {
     if (user.password.length >= 4 && user.password.length <= 20) {
       user.password = bcrypt.hashSync(user.password, 10)
     } else {

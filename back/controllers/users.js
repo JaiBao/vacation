@@ -1,10 +1,11 @@
 import users from '../models/users.js'
-// import products from '../models/products.js'
+import vacations from '../models/vacations.js'
 import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
   try {
     await users.create({
+      name: req.body.name,
       account: req.body.account,
       password: req.body.password,
       phone: req.body.phone
@@ -30,7 +31,9 @@ export const login = async (req, res) => {
       success: true,
       message: '',
       result: {
+        _id: req.user._id,
         token,
+        name: req.user.name,
         account: req.user.account,
         phone: req.user.phone,
         // cart: req.user.cart.reduce((total, current) => total + current.quantity, 0),
@@ -38,6 +41,7 @@ export const login = async (req, res) => {
       }
     })
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: error })
   }
 }
@@ -70,6 +74,7 @@ export const getUser = (req, res) => {
       success: true,
       message: '',
       result: {
+        name: req.user.name,
         account: req.user.account,
         phone: req.user.phone,
         role: req.user.role
@@ -79,52 +84,130 @@ export const getUser = (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
-
-// export const editCart = async (req, res) => {
+export const editUser = async (req, res) => {
+  try {
+    const data = {
+      account: req.body.account,
+      phone: req.body.phone,
+      name: req.body.name,
+      password: req.body.password
+    }
+    const id = req.user._id
+    console.log(req.body)
+    const result = await users.findByIdAndUpdate(id, data, { new: true })
+    res.status(200).send({ success: true, message: result })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const key = Object.keys(error.errors)[0]
+      const message = error.errors[key].message
+      res.status(400).send({ success: false, message })
+    } else {
+      res.status(500).send({ success: false, message: error.message })
+    }
+  }
+}
+export const editUserAdmin = async (req, res) => {
+  try {
+    const data = {
+      account: req.body.account,
+      phone: req.body.phone,
+      name: req.body.name,
+      id: req.body.id,
+      role: req.body.role,
+      password: req.body.password
+    }
+    const result = await users.findByIdAndUpdate({ _id: req.body.id }, data, { new: true })
+    res.status(200).send({ success: true, message: result })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const key = Object.keys(error.errors)[0]
+      const message = error.errors[key].message
+      res.status(400).send({ success: false, message })
+    } else {
+      res.status(500).send({ success: false, message: error.message })
+    }
+  }
+}
+// ------------------
+// export const editUser = async (req, res) => {
 //   try {
-//     // 找購物車有沒有此商品
-//     const idx = req.user.cart.findIndex(cart => cart.p_id.toString() === req.body.p_id)
-//     if (idx > -1) {
-//       // 如果有，檢查新數量是多少
-//       const quantity = req.user.cart[idx].quantity + parseInt(req.body.quantity)
-//       console.log(req.body.quantity)
-//       if (quantity <= 0) {
-//         // 如果新數量小於 0，從購物車陣列移除
-//         req.user.cart.splice(idx, 1)
-//       } else {
-//         // 如果新數量大於 0，修改購物車陣列數量
-//         req.user.cart[idx].quantity = quantity
+//     const result = await users.findById(req.body._id)
+//     result.email = req.body.email || result.email
+//     result.phone = req.body.phone || result.phone
+//     result.name = req.body.name || result.name
+//     result.password = req.body.password || result.password
+//     result.account = req.body.account || result.account
+//     await result.save()
+//     res.status(200).json({
+//       success: true,
+//       result: {
+//         email: result.email,
+//         phone: result.phone,
+//         name: result.name,
+//         account: result.account
 //       }
-//     } else {
-//       // 如果購物車內沒有此商品，檢查商品是否存在
-//       const product = await products.findById(req.body.p_id)
-//       // 如果不存在，回應 404
-//       if (!product || !product.sell) {
-//         res.status(404).send({ success: false, message: '找不到' })
-//         return
-//       }
-//       // 如果存在，加入購物車陣列
-//       req.user.cart.push({
-//         p_id: req.body.p_id,
-//         quantity: parseInt(req.body.quantity)
-//       })
-//     }
-//     await req.user.save()
-//     res.status(200).json({ success: true, message: '', result: req.user.cart.reduce((total, current) => total + current.quantity, 0) })
-//   } catch (error) {
-//     if (error.name === 'ValidationError') {
-//       res.status(400).json({ success: false, message: error.errors[Object.keys(error.errors)[0]].message })
-//     } else {
-//       res.status(500).json({ success: false, message: '未知錯誤' })
-//     }
-//   }
-// }
-
-// export const getCart = async (req, res) => {
-//   try {
-//     const result = await users.findById(req.user._id, 'cart').populate('cart.p_id')
-//     res.status(200).json({ success: true, message: '', result: result.cart })
+//     })
 //   } catch (error) {
 //     res.status(500).json({ success: false, message: '未知錯誤' })
 //   }
 // }
+// ----------------------
+
+export const findAllUserVacation = async (req, res) => {
+  try {
+    const result = await vacations.find()
+    res.status(200).json({ success: true, message: result })
+  } catch (error) {
+    res.status(500).json({ success: false, message: '未知錯誤' })
+  }
+}
+
+// export const findVacationsByDate = async (req, res) => {
+//   try {
+//     const date = req.body.date
+
+//     const userwithVacation = await users.find().populate('vacation')
+//     const vacations = userwithVacation.flatMap(users => users.vacation)
+//     const vacationss = await vacations.find({ startDate: { $lte: date }, endDate: { $gte: date } })
+//     res.status(200).json({ success: true, message: vacationss })
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message })
+//   }
+// }
+
+export const findVacationsByDate = async (req, res) => {
+  try {
+    const date = req.body.date
+    const vacationss = await users.find({ startDate: { $lte: date }, endDate: { $gte: date } })
+    res.status(200).json({ success: true, message: vacationss })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const getAllUser = async (req, res) => {
+  try {
+    const result = await users.find()
+    res.status(200).json({ success: true, message: result })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const deleteUser = async (req, res) => {
+  try {
+    const result = await users.findByIdAndDelete({ _id: req.params.id })
+    res.status(200).json({ success: true, message: result })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const findUserVacation = async (req, res) => {
+  try {
+    const result = await vacations.find({ name: req.params.name })
+    res.status(200).json({ success: true, message: result })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
